@@ -17,11 +17,18 @@ export async function getWeather(city) {
   const geoData = await geoResponse.json();
 
   if (!geoData.results || geoData.results.length === 0) {
-    throw new Error("City not found");
+    throw new Error("Please enter a valid city name");
   }
 
-  const location = geoData.results[0];
+  // const location = geoData.results[0];
+const location = geoData.results.find(
+  (result) =>
+    result.name.toLowerCase() === city.trim().toLowerCase()
+);
 
+if (!location) {
+  throw new Error("City not found. Please enter a valid city name.");
+}
   // Step 2: Get current weather + 5 day forecast
   const weatherResponse = await fetch(
     `${WEATHER_API}?latitude=${location.latitude}&longitude=${location.longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&forecast_days=5&timezone=auto`
